@@ -10,7 +10,7 @@ use std::u64::MAX as U64_MAX;
 /// perform better and lead to better throughput than the `ExponentialBackoff`
 /// strategy.
 ///
-/// See ["A Performance Comparison of Different Backoff Algorithms under Different Rebroadcast Probabilities for MANETs."](http://www.comp.leeds.ac.uk/ukpew09/papers/12.pdf)
+/// See ["A Performance Comparison of Different Backoff Algorithms under Different Rebroadcast Probabilities for MANETs."](https://www.researchgate.net/profile/Saher-Manaseer/publication/255672213_A_Performance_Comparison_of_Different_Backoff_Algorithms_under_Different_Rebroadcast_Probabilities_for_MANET's/links/542d40220cf29bbc126d2378/A-Performance-Comparison-of-Different-Backoff-Algorithms-under-Different-Rebroadcast-Probabilities-for-MANETs.pdf)
 /// for more details.
 #[derive(Debug, Clone)]
 pub struct FibonacciBackoff {
