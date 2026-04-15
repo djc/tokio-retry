@@ -6,8 +6,7 @@ use std::task::{Context, Poll};
 use pin_project_lite::pin_project;
 use tokio::time::{sleep_until, Duration, Instant, Sleep};
 
-use super::condition::Condition;
-use super::Action;
+use super::{Action, Condition};
 
 pin_project! {
     #[project = RetryStateProj]
