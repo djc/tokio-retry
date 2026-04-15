@@ -1,21 +1,9 @@
 //! This library provides extensible asynchronous retry behaviours
 //! for use with the ecosystem of [`tokio`](https://tokio.rs/) libraries.
 //!
-//! # Installation
-//!
-//! Add this to your `Cargo.toml`:
-//!
-//! ```toml
-//! [dependencies]
-//! tokio-retry = "0.3"
-//! ```
-//!
 //! # Example
 //!
 //! ```rust,no_run
-//! # extern crate tokio;
-//! # extern crate tokio_retry;
-//! #
 //! use tokio_retry::Retry;
 //! use tokio_retry::strategy::{ExponentialBackoff, jitter};
 //!
