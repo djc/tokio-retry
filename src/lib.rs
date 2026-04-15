@@ -36,9 +36,9 @@
 //! ```
 
 use core::future::Future;
-use std::iter::{IntoIterator, Iterator};
-use std::pin::Pin;
-use std::task::{Context, Poll};
+use core::iter::{IntoIterator, Iterator};
+use core::pin::Pin;
+use core::task::{Context, Poll};
 
 use pin_project_lite::pin_project;
 use tokio::time::{sleep_until, Duration, Instant, Sleep};

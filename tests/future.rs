@@ -1,13 +1,13 @@
-use std::future;
-use std::iter::Take;
-use std::sync::atomic::{AtomicUsize, Ordering};
+use core::future;
+use core::iter::Take;
+use core::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::Arc;
 
 use tokio_retry::{Retry, RetryIf};
 
 #[tokio::test]
 async fn attempts_just_once() {
-    use std::iter::empty;
+    use core::iter::empty;
     let counter = Arc::new(AtomicUsize::new(0));
     let cloned_counter = counter.clone();
     let future = Retry::spawn(empty(), move || {

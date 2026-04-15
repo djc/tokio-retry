@@ -1,5 +1,5 @@
-use std::iter::Iterator;
-use std::time::Duration;
+use core::iter::Iterator;
+use core::time::Duration;
 
 /// A retry strategy driven by exponential back-off.
 ///
