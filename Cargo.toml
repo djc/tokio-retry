@@ -13,7 +13,7 @@ rust-version = "1.85"
 [dependencies]
 rand = "0.10.1"
 tokio = { version = "1.0", features = ["time"] }
-pin-project = "1.0.5"
+pin-project-lite = "0.2.16"
 
 [dev-dependencies]
 tokio = { version = "1.0", features = ["macros", "rt-multi-thread"] }

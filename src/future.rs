@@ -6,26 +6,34 @@ use std::iter::{IntoIterator, Iterator};
 use std::pin::Pin;
 use std::task::{Context, Poll};
 
-use pin_project::pin_project;
+use pin_project_lite::pin_project;
 use tokio::time::{sleep_until, Duration, Instant, Sleep};
 
 use super::action::Action;
 use super::condition::Condition;
 
-#[pin_project(project = RetryStateProj)]
-enum RetryState<A>
-where
-    A: Action,
-{
-    Running(#[pin] A::Future),
-    Sleeping(#[pin] Sleep),
+pin_project! {
+    #[project = RetryStateProj]
+    enum RetryState<A>
+    where
+        A: Action,
+    {
+        Running {
+            #[pin]
+            future: A::Future,
+        },
+        Sleeping {
+            #[pin]
+            future: Sleep,
+        },
+    }
 }
 
 impl<A: Action> RetryState<A> {
     fn poll(self: Pin<&mut Self>, cx: &mut Context) -> RetryFuturePoll<A> {
         match self.project() {
-            RetryStateProj::Running(future) => RetryFuturePoll::Running(future.poll(cx)),
-            RetryStateProj::Sleeping(future) => RetryFuturePoll::Sleeping(future.poll(cx)),
+            RetryStateProj::Running { future } => RetryFuturePoll::Running(future.poll(cx)),
+            RetryStateProj::Sleeping { future } => RetryFuturePoll::Sleeping(future.poll(cx)),
         }
     }
 }
@@ -38,15 +46,16 @@ where
     Sleeping(Poll<()>),
 }
 
-/// Future that drives multiple attempts at an action via a retry strategy.
-#[pin_project]
-pub struct Retry<I, A>
-where
-    I: Iterator<Item = Duration>,
-    A: Action,
-{
-    #[pin]
-    retry_if: RetryIf<I, A, fn(&A::Error) -> bool>,
+pin_project! {
+    /// Future that drives multiple attempts at an action via a retry strategy.
+    pub struct Retry<I, A>
+    where
+        I: Iterator<Item = Duration>,
+        A: Action,
+    {
+        #[pin]
+        retry_if: RetryIf<I, A, fn(&A::Error) -> bool>,
+    }
 }
 
 impl<I, A> Retry<I, A>
@@ -77,20 +86,21 @@ where
     }
 }
 
-/// Future that drives multiple attempts at an action via a retry strategy. Retries are only attempted if
-/// the `Error` returned by the future satisfies a given condition.
-#[pin_project]
-pub struct RetryIf<I, A, C>
-where
-    I: Iterator<Item = Duration>,
-    A: Action,
-    C: Condition<A::Error>,
-{
-    strategy: I,
-    #[pin]
-    state: RetryState<A>,
-    action: A,
-    condition: C,
+pin_project! {
+    /// Future that drives multiple attempts at an action via a retry strategy. Retries are only attempted if
+    /// the `Error` returned by the future satisfies a given condition.
+    pub struct RetryIf<I, A, C>
+    where
+        I: Iterator<Item = Duration>,
+        A: Action,
+        C: Condition<A::Error>,
+    {
+        strategy: I,
+        #[pin]
+        state: RetryState<A>,
+        action: A,
+        condition: C,
+    }
 }
 
 impl<I, A, C> RetryIf<I, A, C>
@@ -106,7 +116,9 @@ where
     ) -> RetryIf<I, A, C> {
         RetryIf {
             strategy: strategy.into_iter(),
-            state: RetryState::Running(action.run()),
+            state: RetryState::Running {
+                future: action.run(),
+            },
             action: action,
             condition: condition,
         }
@@ -120,7 +132,7 @@ where
         self.as_mut()
             .project()
             .state
-            .set(RetryState::Running(future));
+            .set(RetryState::Running { future });
         self.poll(cx)
     }
 
@@ -137,7 +149,7 @@ where
                 self.as_mut()
                     .project()
                     .state
-                    .set(RetryState::Sleeping(future));
+                    .set(RetryState::Sleeping { future });
                 Ok(self.poll(cx))
             }
         }
