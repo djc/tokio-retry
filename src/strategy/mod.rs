@@ -1,7 +1,3 @@
-mod fixed_interval;
-
-pub use self::fixed_interval::FixedInterval;
-
 use std::iter::Iterator;
 use std::time::Duration;
 use std::u64::MAX as U64_MAX;
@@ -154,6 +150,35 @@ impl Iterator for FibonacciBackoff {
     }
 }
 
+/// A retry strategy driven by a fixed interval.
+#[derive(Debug, Clone)]
+pub struct FixedInterval {
+    duration: Duration,
+}
+
+impl FixedInterval {
+    /// Constructs a new fixed interval strategy.
+    pub fn new(duration: Duration) -> FixedInterval {
+        FixedInterval { duration: duration }
+    }
+
+    /// Constructs a new fixed interval strategy,
+    /// given a duration in milliseconds.
+    pub fn from_millis(millis: u64) -> FixedInterval {
+        FixedInterval {
+            duration: Duration::from_millis(millis),
+        }
+    }
+}
+
+impl Iterator for FixedInterval {
+    type Item = Duration;
+
+    fn next(&mut self) -> Option<Duration> {
+        Some(self.duration)
+    }
+}
+
 pub fn jitter(duration: Duration) -> Duration {
     duration.mul_f64(rand::random::<f64>())
 }
@@ -261,5 +286,14 @@ mod tests {
         assert_eq!(s.next(), Some(Duration::from_secs(1)));
         assert_eq!(s.next(), Some(Duration::from_secs(1)));
         assert_eq!(s.next(), Some(Duration::from_secs(2)));
+    }
+
+    #[test]
+    fn returns_some_fixed() {
+        let mut s = FixedInterval::new(Duration::from_millis(123));
+
+        assert_eq!(s.next(), Some(Duration::from_millis(123)));
+        assert_eq!(s.next(), Some(Duration::from_millis(123)));
+        assert_eq!(s.next(), Some(Duration::from_millis(123)));
     }
 }
