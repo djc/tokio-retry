@@ -6,16 +6,7 @@ Extensible, asynchronous retry behaviours for the ecosystem of [tokio](https://t
 [![Crates.io](https://img.shields.io/crates/v/tokio-retry.svg)](https://crates.io/crates/tokio-retry)
 [![Build status](https://github.com/djc/tokio-retry/workflows/CI/badge.svg)](https://github.com/djc/tokio-retry/actions?query=workflow%3ACI)
 
-## Installation
-
-Add this to your `Cargo.toml`:
-
-```toml
-[dependencies]
-tokio-retry = "0.3"
-```
-
-## Examples
+## Example
 
 ```rust
 use tokio_retry::Retry;
