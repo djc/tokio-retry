@@ -9,6 +9,7 @@ repository = "https://github.com/srijs/rust-tokio-retry"
 documentation = "https://docs.rs/tokio-retry"
 keywords = ["futures", "tokio", "retry", "exponential", "backoff"]
 edition = "2018"
+rust-version = "1.71"
 
 [dependencies]
 rand = "0.9"
