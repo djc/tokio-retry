@@ -18,8 +18,8 @@ impl ExponentialBackoff {
     ///
     /// The resulting duration is calculated by taking the base to the `n`-th power,
     /// where `n` denotes the number of past attempts.
-    pub fn from_millis(base: u64) -> ExponentialBackoff {
-        ExponentialBackoff {
+    pub fn from_millis(base: u64) -> Self {
+        Self {
             current: base,
             base,
             factor: 1u64,
@@ -32,13 +32,13 @@ impl ExponentialBackoff {
     /// For example, using a factor of `1000` will make each delay in units of seconds.
     ///
     /// Default factor is `1`.
-    pub fn factor(mut self, factor: u64) -> ExponentialBackoff {
+    pub fn factor(mut self, factor: u64) -> Self {
         self.factor = factor;
         self
     }
 
     /// Apply a maximum delay. No retry delay will be longer than this `Duration`.
-    pub fn max_delay(mut self, duration: Duration) -> ExponentialBackoff {
+    pub fn max_delay(mut self, duration: Duration) -> Self {
         self.max_delay = Some(duration);
         self
     }
@@ -93,8 +93,8 @@ pub struct FibonacciBackoff {
 impl FibonacciBackoff {
     /// Constructs a new fibonacci back-off strategy,
     /// given a base duration in milliseconds.
-    pub fn from_millis(millis: u64) -> FibonacciBackoff {
-        FibonacciBackoff {
+    pub fn from_millis(millis: u64) -> Self {
+        Self {
             curr: millis,
             next: millis,
             factor: 1u64,
@@ -107,13 +107,13 @@ impl FibonacciBackoff {
     /// For example, using a factor of `1000` will make each delay in units of seconds.
     ///
     /// Default factor is `1`.
-    pub fn factor(mut self, factor: u64) -> FibonacciBackoff {
+    pub fn factor(mut self, factor: u64) -> Self {
         self.factor = factor;
         self
     }
 
     /// Apply a maximum delay. No retry delay will be longer than this `Duration`.
-    pub fn max_delay(mut self, duration: Duration) -> FibonacciBackoff {
+    pub fn max_delay(mut self, duration: Duration) -> Self {
         self.max_delay = Some(duration);
         self
     }
@@ -157,14 +157,14 @@ pub struct FixedInterval {
 
 impl FixedInterval {
     /// Constructs a new fixed interval strategy.
-    pub fn new(duration: Duration) -> FixedInterval {
-        FixedInterval { duration }
+    pub fn new(duration: Duration) -> Self {
+        Self { duration }
     }
 
     /// Constructs a new fixed interval strategy,
     /// given a duration in milliseconds.
-    pub fn from_millis(millis: u64) -> FixedInterval {
-        FixedInterval {
+    pub fn from_millis(millis: u64) -> Self {
+        Self {
             duration: Duration::from_millis(millis),
         }
     }

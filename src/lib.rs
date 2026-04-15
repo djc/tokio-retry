@@ -64,7 +64,7 @@ pin_project! {
 }
 
 impl<A: Action> RetryState<A> {
-    fn poll(self: Pin<&mut Self>, cx: &mut Context) -> RetryFuturePoll<A> {
+    fn poll(self: Pin<&mut Self>, cx: &mut Context<'_>) -> RetryFuturePoll<A> {
         match self.project() {
             RetryStateProj::Running { future } => RetryFuturePoll::Running(future.poll(cx)),
             RetryStateProj::Sleeping { future } => RetryFuturePoll::Sleeping(future.poll(cx)),
@@ -97,11 +97,8 @@ where
     I: Iterator<Item = Duration>,
     A: Action,
 {
-    pub fn spawn<T: IntoIterator<IntoIter = I, Item = Duration>>(
-        strategy: T,
-        action: A,
-    ) -> Retry<I, A> {
-        Retry {
+    pub fn spawn<T: IntoIterator<IntoIter = I, Item = Duration>>(strategy: T, action: A) -> Self {
+        Self {
             retry_if: RetryIf::spawn(strategy, action, (|_| true) as fn(&A::Error) -> bool),
         }
     }
@@ -114,7 +111,7 @@ where
 {
     type Output = Result<A::Item, A::Error>;
 
-    fn poll(self: Pin<&mut Self>, cx: &mut Context) -> Poll<Self::Output> {
+    fn poll(self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output> {
         let this = self.project();
         this.retry_if.poll(cx)
     }
@@ -147,8 +144,8 @@ where
         strategy: T,
         mut action: A,
         condition: C,
-    ) -> RetryIf<I, A, C> {
-        RetryIf {
+    ) -> Self {
+        Self {
             strategy: strategy.into_iter(),
             state: RetryState::Running {
                 future: action.run(),
@@ -158,7 +155,7 @@ where
         }
     }
 
-    fn attempt(mut self: Pin<&mut Self>, cx: &mut Context) -> Poll<Result<A::Item, A::Error>> {
+    fn attempt(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Result<A::Item, A::Error>> {
         let future = {
             let this = self.as_mut().project();
             this.action.run()
@@ -174,7 +171,7 @@ where
     fn retry(
         mut self: Pin<&mut Self>,
         err: A::Error,
-        cx: &mut Context,
+        cx: &mut Context<'_>,
     ) -> Result<Poll<Result<A::Item, A::Error>>, A::Error> {
         match self.as_mut().project().strategy.next() {
             None => Err(err),
@@ -199,7 +196,7 @@ where
 {
     type Output = Result<A::Item, A::Error>;
 
-    fn poll(mut self: Pin<&mut Self>, cx: &mut Context) -> Poll<Self::Output> {
+    fn poll(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output> {
         match self.as_mut().project().state.poll(cx) {
             RetryFuturePoll::Running(poll_result) => match poll_result {
                 Poll::Ready(Ok(ok)) => Poll::Ready(Ok(ok)),
