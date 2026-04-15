@@ -2,12 +2,9 @@
 
 Extensible, asynchronous retry behaviours for the ecosystem of [tokio](https://tokio.rs/) libraries.
 
-[![Build Status](https://travis-ci.org/srijs/rust-tokio-retry.svg?branch=master)](https://travis-ci.org/srijs/rust-tokio-retry)
-[![crates](http://meritbadge.herokuapp.com/tokio-retry)](https://crates.io/crates/tokio-retry)
-[![dependency status](https://deps.rs/repo/github/srijs/rust-tokio-retry/status.svg)](https://deps.rs/repo/github/srijs/rust-tokio-retry)
-
-
-[Documentation](https://docs.rs/tokio-retry)
+[![Documentation](https://docs.rs/tokio-retry/badge.svg)](https://docs.rs/tokio-retry/)
+[![Crates.io](https://img.shields.io/crates/v/tokio-retry.svg)](https://crates.io/crates/tokio-retry)
+[![Build status](https://github.com/djc/tokio-retry/workflows/CI/badge.svg)](https://github.com/djc/tokio-retry/actions?query=workflow%3ACI)
 
 ## Installation
 
