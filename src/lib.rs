@@ -35,8 +35,6 @@
 //! # }
 //! ```
 
-#![allow(warnings)]
-
 use core::future::Future;
 
 mod condition;
