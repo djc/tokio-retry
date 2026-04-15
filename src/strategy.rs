@@ -178,6 +178,7 @@ impl Iterator for FixedInterval {
     }
 }
 
+#[cfg(feature = "rand")]
 pub fn jitter(duration: Duration) -> Duration {
     duration.mul_f64(rand::random::<f64>())
 }

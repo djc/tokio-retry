@@ -10,8 +10,12 @@ keywords = ["futures", "tokio", "retry", "exponential", "backoff"]
 edition = "2018"
 rust-version = "1.85"
 
+[features]
+default = ["rand"]
+rand = ["dep:rand"]
+
 [dependencies]
-rand = "0.10.1"
+rand = { version = "0.10.1", default-features = false, features = ["thread_rng"], optional = true }
 tokio = { version = "1.0", features = ["time"] }
 pin-project-lite = "0.2.16"
 
