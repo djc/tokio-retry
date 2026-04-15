@@ -9,7 +9,7 @@ use std::task::{Context, Poll};
 use pin_project_lite::pin_project;
 use tokio::time::{sleep_until, Duration, Instant, Sleep};
 
-use super::action::Action;
+use super::Action;
 use super::condition::Condition;
 
 pin_project! {
