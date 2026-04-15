@@ -1,8 +1,6 @@
 mod fixed_interval;
-mod jitter;
 
 pub use self::fixed_interval::FixedInterval;
-pub use self::jitter::jitter;
 
 use std::iter::Iterator;
 use std::time::Duration;
@@ -154,6 +152,10 @@ impl Iterator for FibonacciBackoff {
 
         Some(duration)
     }
+}
+
+pub fn jitter(duration: Duration) -> Duration {
+    duration.mul_f64(rand::random::<f64>())
 }
 
 #[cfg(test)]
