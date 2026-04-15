@@ -37,12 +37,10 @@
 
 use core::future::Future;
 
-mod condition;
 mod future;
 /// Assorted retry strategies including fixed interval and exponential back-off.
 pub mod strategy;
 
-pub use condition::Condition;
 pub use future::{Retry, RetryIf};
 
 /// An action can be run multiple times and produces a future.
@@ -64,5 +62,16 @@ impl<R, E, T: Future<Output = Result<R, E>>, F: FnMut() -> T> Action for F {
 
     fn run(&mut self) -> Self::Future {
         self()
+    }
+}
+
+/// Specifies under which conditions a retry is attempted.
+pub trait Condition<E> {
+    fn should_retry(&mut self, error: &E) -> bool;
+}
+
+impl<E, F: FnMut(&E) -> bool> Condition<E> for F {
+    fn should_retry(&mut self, error: &E) -> bool {
+        self(error)
     }
 }
