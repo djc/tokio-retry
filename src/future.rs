@@ -1,6 +1,3 @@
-use std::cmp;
-use std::error;
-use std::fmt;
 use std::future::Future;
 use std::iter::{IntoIterator, Iterator};
 use std::pin::Pin;
@@ -9,8 +6,8 @@ use std::task::{Context, Poll};
 use pin_project_lite::pin_project;
 use tokio::time::{sleep_until, Duration, Instant, Sleep};
 
-use super::Action;
 use super::condition::Condition;
+use super::Action;
 
 pin_project! {
     #[project = RetryStateProj]
@@ -119,14 +116,14 @@ where
             state: RetryState::Running {
                 future: action.run(),
             },
-            action: action,
-            condition: condition,
+            action,
+            condition,
         }
     }
 
     fn attempt(mut self: Pin<&mut Self>, cx: &mut Context) -> Poll<Result<A::Item, A::Error>> {
         let future = {
-            let mut this = self.as_mut().project();
+            let this = self.as_mut().project();
             this.action.run()
         };
         self.as_mut()
@@ -136,6 +133,7 @@ where
         self.poll(cx)
     }
 
+    #[allow(clippy::type_complexity)]
     fn retry(
         mut self: Pin<&mut Self>,
         err: A::Error,

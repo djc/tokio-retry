@@ -1,6 +1,5 @@
 use std::iter::Iterator;
 use std::time::Duration;
-use std::u64::MAX as U64_MAX;
 
 /// A retry strategy driven by exponential back-off.
 ///
@@ -22,7 +21,7 @@ impl ExponentialBackoff {
     pub fn from_millis(base: u64) -> ExponentialBackoff {
         ExponentialBackoff {
             current: base,
-            base: base,
+            base,
             factor: 1u64,
             max_delay: None,
         }
@@ -53,7 +52,7 @@ impl Iterator for ExponentialBackoff {
         let duration = if let Some(duration) = self.current.checked_mul(self.factor) {
             Duration::from_millis(duration)
         } else {
-            Duration::from_millis(U64_MAX)
+            Duration::from_millis(u64::MAX)
         };
 
         // check if we reached max delay
@@ -66,7 +65,7 @@ impl Iterator for ExponentialBackoff {
         if let Some(next) = self.current.checked_mul(self.base) {
             self.current = next;
         } else {
-            self.current = U64_MAX;
+            self.current = u64::MAX;
         }
 
         Some(duration)
@@ -128,7 +127,7 @@ impl Iterator for FibonacciBackoff {
         let duration = if let Some(duration) = self.curr.checked_mul(self.factor) {
             Duration::from_millis(duration)
         } else {
-            Duration::from_millis(U64_MAX)
+            Duration::from_millis(u64::MAX)
         };
 
         // check if we reached max delay
@@ -143,7 +142,7 @@ impl Iterator for FibonacciBackoff {
             self.next = next_next;
         } else {
             self.curr = self.next;
-            self.next = U64_MAX;
+            self.next = u64::MAX;
         }
 
         Some(duration)
@@ -159,7 +158,7 @@ pub struct FixedInterval {
 impl FixedInterval {
     /// Constructs a new fixed interval strategy.
     pub fn new(duration: Duration) -> FixedInterval {
-        FixedInterval { duration: duration }
+        FixedInterval { duration }
     }
 
     /// Constructs a new fixed interval strategy,
@@ -207,11 +206,11 @@ mod tests {
 
     #[test]
     fn exp_saturates_at_maximum_value() {
-        let mut s = ExponentialBackoff::from_millis(U64_MAX - 1);
+        let mut s = ExponentialBackoff::from_millis(u64::MAX - 1);
 
-        assert_eq!(s.next(), Some(Duration::from_millis(U64_MAX - 1)));
-        assert_eq!(s.next(), Some(Duration::from_millis(U64_MAX)));
-        assert_eq!(s.next(), Some(Duration::from_millis(U64_MAX)));
+        assert_eq!(s.next(), Some(Duration::from_millis(u64::MAX - 1)));
+        assert_eq!(s.next(), Some(Duration::from_millis(u64::MAX)));
+        assert_eq!(s.next(), Some(Duration::from_millis(u64::MAX)));
     }
 
     #[test]
@@ -254,9 +253,9 @@ mod tests {
 
     #[test]
     fn fib_saturates_at_maximum_value() {
-        let mut iter = FibonacciBackoff::from_millis(U64_MAX);
-        assert_eq!(iter.next(), Some(Duration::from_millis(U64_MAX)));
-        assert_eq!(iter.next(), Some(Duration::from_millis(U64_MAX)));
+        let mut iter = FibonacciBackoff::from_millis(u64::MAX);
+        assert_eq!(iter.next(), Some(Duration::from_millis(u64::MAX)));
+        assert_eq!(iter.next(), Some(Duration::from_millis(u64::MAX)));
     }
 
     #[test]
