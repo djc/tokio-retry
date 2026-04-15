@@ -35,6 +35,8 @@
 //! # }
 //! ```
 
+#![no_std]
+
 use core::future::Future;
 use core::iter::{IntoIterator, Iterator};
 use core::pin::Pin;
