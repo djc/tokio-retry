@@ -6,6 +6,15 @@ Extensible, asynchronous retry behaviours for the ecosystem of [tokio](https://t
 [![Crates.io](https://img.shields.io/crates/v/tokio-retry.svg)](https://crates.io/crates/tokio-retry)
 [![Build status](https://github.com/djc/tokio-retry/workflows/CI/badge.svg)](https://github.com/djc/tokio-retry/actions?query=workflow%3ACI)
 
+## Features
+
+- Multiple retry strategies:
+  - Exponential backoff
+  - Fibonacci backoff
+  - Fixed interval
+- `no_std` support
+- Optional support for random jitter (requires the `rand` feature)
+
 ## Example
 
 ```rust
