@@ -32,8 +32,9 @@ async fn action() -> Result<u64, ()> {
 #[tokio::main]
 async fn main() -> Result<(), ()> {
     let retry_strategy = ExponentialBackoff::from_millis(10)
-        .map(jitter) // add jitter to delays
-        .take(3);    // limit to 3 retries
+        .map(jitter)                          // add jitter to delays
+        .deadline(Duration::from_millis(500)) // stop retrying after 500ms
+        .take(3);                             // limit to 3 retries
 
     let result = Retry::spawn(retry_strategy, action).await?;
 

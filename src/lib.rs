@@ -15,9 +15,9 @@
 //! ```rust,no_run
 //! # extern crate tokio;
 //! # extern crate tokio_retry;
-//! #
+//! # use std::time::Duration;
 //! use tokio_retry::Retry;
-//! use tokio_retry::strategy::{ExponentialBackoff, jitter};
+//! use tokio_retry::strategy::{Deadline, ExponentialBackoff, jitter};
 //!
 //! async fn action() -> Result<u64, ()> {
 //!     // do some real-world stuff here...
@@ -27,13 +27,18 @@
 //! # #[tokio::main]
 //! # async fn main() -> Result<(), ()> {
 //! let retry_strategy = ExponentialBackoff::from_millis(10)
-//!     .map(jitter) // add jitter to delays
-//!     .take(3);    // limit to 3 retries
+//!     .map(jitter)                          // add jitter to delays
+//!     .deadline(Duration::from_millis(500)) // stop retrying after 500ms
+//!     .take(3);                             // limit to 3 retries
 //!
 //! let result = Retry::spawn(retry_strategy, action).await?;
 //! # Ok(())
 //! # }
 //! ```
+//!
+//! NOTE: The time spent executing an action does not affect the intervals between
+//! retries. Therefore, for long-running functions it's a good idea to set up a deadline,
+//! to place an upper bound on the strategy execution time.
 
 #![allow(warnings)]
 
