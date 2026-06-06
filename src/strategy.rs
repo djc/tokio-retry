@@ -18,7 +18,7 @@ impl ExponentialBackoff {
     ///
     /// The resulting duration is calculated by taking the base to the `n`-th power,
     /// where `n` denotes the number of past attempts.
-    pub fn from_millis(base: u64) -> Self {
+    pub const fn from_millis(base: u64) -> Self {
         Self {
             current: base,
             base,
@@ -93,7 +93,7 @@ pub struct FibonacciBackoff {
 impl FibonacciBackoff {
     /// Constructs a new fibonacci back-off strategy,
     /// given a base duration in milliseconds.
-    pub fn from_millis(millis: u64) -> Self {
+    pub const fn from_millis(millis: u64) -> Self {
         Self {
             curr: millis,
             next: millis,
@@ -163,7 +163,7 @@ impl FixedInterval {
 
     /// Constructs a new fixed interval strategy,
     /// given a duration in milliseconds.
-    pub fn from_millis(millis: u64) -> Self {
+    pub const fn from_millis(millis: u64) -> Self {
         Self {
             duration: Duration::from_millis(millis),
         }
