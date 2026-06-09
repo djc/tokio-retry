@@ -49,11 +49,7 @@ impl Iterator for ExponentialBackoff {
 
     fn next(&mut self) -> Option<Duration> {
         // set delay duration by applying factor
-        let duration = if let Some(duration) = self.current.checked_mul(self.factor) {
-            Duration::from_millis(duration)
-        } else {
-            Duration::from_millis(u64::MAX)
-        };
+        let duration = Duration::from_millis(self.current.saturating_mul(self.factor));
 
         // check if we reached max delay
         if let Some(max_delay) = self.max_delay {
@@ -62,12 +58,7 @@ impl Iterator for ExponentialBackoff {
             }
         }
 
-        if let Some(next) = self.current.checked_mul(self.base) {
-            self.current = next;
-        } else {
-            self.current = u64::MAX;
-        }
-
+        self.current = self.current.saturating_mul(self.base);
         Some(duration)
     }
 }
