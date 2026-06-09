@@ -32,7 +32,7 @@ async fn main() -> Result<(), ()> {
         .map(jitter) // add jitter to delays
         .take(3);    // limit to 3 retries
 
-    let result = Retry::spawn(retry_strategy, action).await?;
+    let result = Retry::start(retry_strategy, action).await?;
 
     Ok(())
 }
