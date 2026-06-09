@@ -10,7 +10,7 @@ async fn attempts_just_once() {
     use core::iter::empty;
     let counter = Arc::new(AtomicUsize::new(0));
     let cloned_counter = counter.clone();
-    let future = Retry::spawn(empty(), move || {
+    let future = Retry::start(empty(), move || {
         cloned_counter.fetch_add(1, Ordering::SeqCst);
         future::ready(Err::<(), u64>(42))
     });
@@ -26,7 +26,7 @@ async fn attempts_until_max_retries_exceeded() {
     let s = FixedInterval::from_millis(100).take(2);
     let counter = Arc::new(AtomicUsize::new(0));
     let cloned_counter = counter.clone();
-    let future = Retry::spawn(s, move || {
+    let future = Retry::start(s, move || {
         cloned_counter.fetch_add(1, Ordering::SeqCst);
         future::ready(Err::<(), u64>(42))
     });
@@ -42,7 +42,7 @@ async fn attempts_until_success() {
     let s = FixedInterval::from_millis(100);
     let counter = Arc::new(AtomicUsize::new(0));
     let cloned_counter = counter.clone();
-    let future = Retry::spawn(s, move || {
+    let future = Retry::start(s, move || {
         let previous = cloned_counter.fetch_add(1, Ordering::SeqCst);
         if previous < 3 {
             future::ready(Err::<(), u64>(42))
@@ -62,7 +62,7 @@ async fn compatible_with_tokio_core() {
     let s = FixedInterval::from_millis(100);
     let counter = Arc::new(AtomicUsize::new(0));
     let cloned_counter = counter.clone();
-    let future = Retry::spawn(s, move || {
+    let future = Retry::start(s, move || {
         let previous = cloned_counter.fetch_add(1, Ordering::SeqCst);
         if previous < 3 {
             future::ready(Err::<(), u64>(42))
@@ -82,7 +82,7 @@ async fn attempts_retry_only_if_given_condition_is_true() {
     let s = FixedInterval::from_millis(100).take(5);
     let counter = Arc::new(AtomicUsize::new(0));
     let cloned_counter = counter.clone();
-    let future: RetryIf<Take<FixedInterval>, _, fn(&usize) -> _> = RetryIf::spawn(
+    let future: RetryIf<Take<FixedInterval>, _, fn(&usize) -> _> = RetryIf::start(
         s,
         move || {
             let previous = cloned_counter.fetch_add(1, Ordering::SeqCst);
